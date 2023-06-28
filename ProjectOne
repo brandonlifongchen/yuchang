@@ -1,0 +1,29 @@
+pip install pybaseball
+
+import pandas as pd
+from pybaseball import statcast
+
+# List of infielders on the Boston Red Sox in 2023
+red_sox_infielders = ['David Hamilton', 'Rafael Devers', 'Enrique Hernandez', 'Christian Arroyo']
+
+# Player of interest (Yu Chang)
+player_of_interest = 'Yu Chang'
+
+# Create an empty DataFrame to store the statistics
+stats_df = pd.DataFrame(columns=['Player', 'Exit Velocity', 'Launch Angle', 'Barrel %'])
+
+# Iterate over the infielders and gather their stats
+for player in red_sox_infielders + [player_of_interest]:
+    # Retrieve Statcast data for the player
+    player_data = statcast(start_dt='2023-01-01', end_dt='2023-12-31', player_name=player)
+
+    # Extract the relevant stats from the player data
+    exit_velocity = player_data['launch_speed'].mean()
+    launch_angle = player_data['launch_angle'].mean()
+    barrel_pct = player_data['barrels'].sum() / player_data['attempts'].sum()
+
+    # Append the player's stats to the DataFrame
+    stats_df = stats_df.append({'Player': player, 'Exit Velocity': exit_velocity, 'Launch Angle': launch_angle, 'Barrel %': barrel_pct}, ignore_index=True)
+
+# Print the statistics DataFrame
+print(stats_df)
